@@ -5,11 +5,10 @@ Reflect Webchat is a Chrome extension that provides an AI-powered chat interface
 ## Features
 
 - AI-powered chat interface
-- Support for multiple AI providers (OpenAI and Anthropic)
-- Automatic context extraction from web pages
+- Support for multiple AI providers (OpenAI and Anthropic) and custom keys
+- Automatic context extraction from web pages and YouTube videos
+- Uses prompt caching to reduce costs
 - Markdown rendering for chat messages
-- Code syntax highlighting
-- Configurable API settings
 - Dark mode support
 
 ## Installation
