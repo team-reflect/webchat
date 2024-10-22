@@ -1,6 +1,5 @@
 import type { Message } from './message'
-import type { AiModel } from './ai'
-import { AiModelContextWindowLimit, countStringTokens, countTokens } from './tokenizer'
+import { countStringTokens, countTokens } from './tokenizer'
 
 /**
  *
@@ -13,24 +12,23 @@ import { AiModelContextWindowLimit, countStringTokens, countTokens } from './tok
 export function buildSystemMessage({
   pageText,
   messages = [],
-  modelName,
+  contextWindowLimit,
 }: {
   pageText?: string | null
   messages: Message[]
-  modelName: AiModel
+  contextWindowLimit?: number
 }): Message {
-  const limit = AiModelContextWindowLimit[modelName]
   const systemMessage = internalBuildSystemMessage(pageText)
   const messagesWithSystem = [systemMessage, ...messages]
 
   // If we are within the limit, return the system message
-  if (countTokens(messagesWithSystem) <= limit) {
+  if (!contextWindowLimit || countTokens(messagesWithSystem) <= contextWindowLimit) {
     return systemMessage
   }
 
   // Truncate the pageText so that it fits within the token limit
   const messagesTokenCount = countTokens(messages)
-  const maxPageTextLength = limit - messagesTokenCount
+  const maxPageTextLength = contextWindowLimit - messagesTokenCount
   const truncatedPageText = truncateString(maxPageTextLength, pageText ?? '')
 
   return internalBuildSystemMessage(truncatedPageText)

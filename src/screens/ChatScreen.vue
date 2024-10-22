@@ -30,7 +30,7 @@ import ChatInput from '@/components/ChatInput.vue'
 import ChatMessage from '@/components/ChatMessage.vue'
 import { useActiveTab } from '@/composables/useActiveTab'
 import { useChat } from '@/composables/useChat'
-import { createAi, getAiModelName } from '@/lib/ai'
+import { createAi, getAiModelName, AiModelContextWindowLimit } from '@/lib/ai'
 import { useConfig } from '@/lib/config'
 import { getTabContentAsText } from '@/lib/getTabContent'
 import type { Message } from '@/lib/message'
@@ -40,22 +40,21 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 const config = useConfig()
 
-const provider = config.provider
-const providerApiKey = config.providerApiKey
+const modelProvider = config.provider
+const modelProviderApiKey = config.providerApiKey
 
-if (!providerApiKey) {
+if (!modelProviderApiKey) {
   throw new Error('No API key set')
 }
 
 const activeTab = useActiveTab()
+const modelName = getAiModelName(modelProvider)
 
-const ai = createAi({
-  provider,
-  providerApiKey,
+const model = createAi({
+  modelProvider,
+  modelProviderApiKey,
+  modelName,
 })
-
-const modelName = getAiModelName(provider)
-const model = ai(modelName)
 
 // Create a computed property for the messages key
 const messagesKey = computed(() => `messages-${activeTab.value?.url}`)
@@ -63,7 +62,6 @@ const messagesKey = computed(() => `messages-${activeTab.value?.url}`)
 const systemMessage = ref<Message | null>(null)
 const defaultSystemMessage = buildSystemMessage({
   messages: [],
-  modelName,
 })
 
 watch(messagesKey, () => {
@@ -83,6 +81,7 @@ const messages = useChromeStorage<Message[]>({
 
 const { appendUserInput } = useChat({
   model,
+  modelProvider,
   messages,
   systemMessage: computed(() => systemMessage.value || defaultSystemMessage),
   onStart: () => scrollToLastMessage(),
@@ -98,7 +97,7 @@ const handleSubmit = async (input: string) => {
     if (text) {
       systemMessage.value = buildSystemMessage({
         messages: messages.value,
-        modelName,
+        contextWindowLimit: AiModelContextWindowLimit[modelName],
         pageText: text,
       })
     }

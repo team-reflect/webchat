@@ -4,31 +4,36 @@ import { createOpenAI } from '@ai-sdk/openai'
 export type AiProvider = 'openai' | 'anthropic'
 export type AiModel = 'gpt-4o' | 'claude-3-5-sonnet-20240620'
 
+export const AiModelContextWindowLimit: Record<AiModel, number> = {
+  'gpt-4o': 128000,
+  /* The API actually supports 200K+ tokens but we use different tokenizer so we limit it to 128K */
+  'claude-3-5-sonnet-20240620': 128000,
+}
+
 export function createAi({
-  provider,
-  providerApiKey,
+  modelProvider,
+  modelProviderApiKey,
+  modelName,
 }: {
-  provider: AiProvider
-  providerApiKey: string
+  modelProvider: AiProvider
+  modelProviderApiKey: string
+  modelName: AiModel
 }) {
-  if (!providerApiKey) {
+  if (!modelProviderApiKey) {
     throw new Error('Provider API key is not set')
   }
 
-  const aiCreator = ((provider: AiProvider) => {
-    switch (provider) {
-      case 'openai':
-        return createOpenAI
-      case 'anthropic':
-        return createAnthropic
-      default:
-        throw new Error(`Unknown provider: ${provider}`)
-    }
-  })(provider)
+  if (modelProvider === 'openai') {
+    const ai = createOpenAI({ apiKey: modelProviderApiKey })
+    return ai(modelName)
+  }
 
-  return aiCreator({
-    apiKey: providerApiKey,
-  })
+  if (modelProvider === 'anthropic') {
+    const ai = createAnthropic({ apiKey: modelProviderApiKey })
+    return ai(modelName, { cacheControl: true })
+  }
+
+  throw new Error(`Unknown provider: ${modelProvider}`)
 }
 
 export function getAiModelName(provider: AiProvider): AiModel {

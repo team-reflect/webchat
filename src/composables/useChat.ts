@@ -1,9 +1,11 @@
 import { convertToCoreMessages, streamText, type LanguageModel } from 'ai'
 import { type Ref } from 'vue'
 import { type Message } from '@/lib/message'
+import type { AiProvider } from '@/lib/ai'
 
 interface UseChatOptions {
   model: LanguageModel
+  modelProvider: AiProvider
   messages: Ref<Message[]>
   systemMessage: Ref<Message>
   onStart?: () => void
@@ -11,7 +13,7 @@ interface UseChatOptions {
 }
 
 export function useChat(options: UseChatOptions) {
-  const { model, messages, systemMessage } = options
+  const { model, modelProvider, messages, systemMessage } = options
 
   const appendUserInput = async (input: string) => {
     // Proactively add the user message to the messages array
@@ -34,7 +36,10 @@ export function useChat(options: UseChatOptions) {
     try {
       const result = await streamText({
         model,
-        messages: convertMessages([systemMessage.value, ...messages.value]),
+        messages: convertMessages(
+          [systemMessage.value, ...messages.value],
+          modelProvider,
+        ),
         headers,
         onFinish: () => {
           options.onFinish?.()
@@ -67,7 +72,23 @@ export function useChat(options: UseChatOptions) {
 // Anthropic requires this header to be set for CORS requests
 const headers = { 'anthropic-dangerous-direct-browser-access': 'true' }
 
-function convertMessages(messages: Message[]) {
+function convertMessages(messages: Message[], provider: AiProvider) {
+  let convertedMessages = messages
+
   // Filter out empty messages, Anthropic doesn't like them
-  return convertToCoreMessages(messages.filter((message) => message.content))
+  convertedMessages = messages.filter((message) => message.content)
+
+  if (provider === 'anthropic') {
+    // Enable ephemeral caching for Anthropic
+    convertedMessages = convertedMessages.map((message) => ({
+      ...message,
+      experimental_providerMetadata: {
+        anthropic: {
+          cacheControl: { type: 'ephemeral' },
+        },
+      },
+    }))
+  }
+
+  return convertToCoreMessages(convertedMessages)
 }
