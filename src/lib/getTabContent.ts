@@ -1,10 +1,12 @@
+import { htmlToText } from './htmlToText'
+
 interface ContentScriptResult {
   html: string | null
   text: string | null
 }
 
 export async function getTabContent(tabId: number): Promise<ContentScriptResult> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     chrome.scripting
       .executeScript({
         target: { tabId },
@@ -14,9 +16,17 @@ export async function getTabContent(tabId: number): Promise<ContentScriptResult>
         resolve(injectionResult.result ?? { html: null, text: null })
       })
       .catch((error) => {
-        reject(error)
+        console.error('Error getting tab content', error)
+        resolve({ html: null, text: null })
       })
   })
+}
+
+export async function getTabContentAsText(tabId: number): Promise<string | null> {
+  const content = await getTabContent(tabId)
+  const text = content.text || (content.html ? htmlToText(content.html) : null)
+
+  return text
 }
 
 async function getContentScript(): Promise<ContentScriptResult> {

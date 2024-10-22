@@ -11,7 +11,7 @@
 
     <div class="flex-1">
       <div
-        class="bg-indigo-100 dark:bg-indigo-950 text-gray-800 p-2 px-3 rounded-lg relative"
+        class="bg-indigo-100 dark:bg-indigo-950 text-gray-800 py-2 px-4 rounded-lg relative"
       >
         <!-- Loading state -->
         <template v-if="!message.content && message.role === 'assistant'">

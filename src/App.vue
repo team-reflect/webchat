@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen overflow-hidden user-select-none">
+  <div class="flex flex-col h-screen overflow-hidden user-select-none bg-background">
     <!-- Nav bar -->
     <div class="flex justify-end p-1 px-2 border-b border-system-border gap-2 flex-none">
       <Button @click="toggleConfig" variant="ghost" size="icon" class="w-8 h-8">

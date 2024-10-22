@@ -26,18 +26,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import ChatInput from '@/components/ChatInput.vue'
 import ChatMessage from '@/components/ChatMessage.vue'
+import { useActiveTab } from '@/composables/useActiveTab'
 import { useChat } from '@/composables/useChat'
 import { createAi, getAiModelName } from '@/lib/ai'
 import { useConfig } from '@/lib/config'
-import { useActiveTab } from '@/composables/useActiveTab'
+import { getTabContentAsText } from '@/lib/getTabContent'
 import type { Message } from '@/lib/message'
-import { useChromeStorage } from '@/utils/useChromeStorage'
-import { getTabContent } from '@/lib/getTabContent'
-import { htmlToText } from '@/lib/htmlToText'
 import { buildSystemMessage } from '@/lib/prompt'
+import { useChromeStorage } from '@/utils/useChromeStorage'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 const config = useConfig()
 
@@ -61,25 +60,19 @@ const model = ai(modelName)
 // Create a computed property for the messages key
 const messagesKey = computed(() => `messages-${activeTab.value?.url}`)
 
-const pageContent = ref<string | null>(null)
-const systemMessage = ref<Message>(buildSystemMessage({ messages: [], modelName }))
+const systemMessage = ref<Message | null>(null)
+const defaultSystemMessage = buildSystemMessage({
+  messages: [],
+  modelName,
+})
 
 watch(messagesKey, () => {
   if (!activeTab.value?.id) {
     return
   }
 
-  getTabContent(activeTab.value.id).then((result) => {
-    pageContent.value = result.text || (result.html ? htmlToText(result.html) : null)
-  })
-})
-
-watch(pageContent, (newVal) => {
-  systemMessage.value = buildSystemMessage({
-    messages: messages.value,
-    modelName,
-    pageText: newVal,
-  })
+  // Reset the system message when the messages key changes
+  systemMessage.value = null
 })
 
 const messages = useChromeStorage<Message[]>({
@@ -91,17 +84,28 @@ const messages = useChromeStorage<Message[]>({
 const { appendUserInput } = useChat({
   model,
   messages,
-  systemMessage,
+  systemMessage: computed(() => systemMessage.value || defaultSystemMessage),
   onStart: () => scrollToLastMessage(),
 })
 
 const chatContainer = ref<HTMLElement | null>(null)
 
-const handleSubmit = (input: string) => {
-  if (input.trim()) {
-    appendUserInput(input)
-    scrollToLastMessage()
+const handleSubmit = async (input: string) => {
+  // If we don't have a system message, try to generate one from the page content
+  if (activeTab.value && !systemMessage.value) {
+    const text = await getTabContentAsText(activeTab.value.id)
+
+    if (text) {
+      systemMessage.value = buildSystemMessage({
+        messages: messages.value,
+        modelName,
+        pageText: text,
+      })
+    }
   }
+
+  appendUserInput(input)
+  scrollToLastMessage()
 }
 
 const scrollToLastMessage = () => {

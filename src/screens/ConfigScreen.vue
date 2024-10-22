@@ -29,7 +29,7 @@
         <li>
           The source code is
           <a
-            href="https://github.com/maccman/webchat-extension"
+            href="https://github.com/team-reflect/webchat"
             target="_blank"
             class="underline text-primary"
             >open source</a

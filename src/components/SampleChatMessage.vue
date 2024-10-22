@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-secondary text-secondary-foreground rounded-lg p-4 py-2 cursor-pointer"
+    class="bg-secondary text-secondary-foreground rounded-lg px-4 py-2 cursor-pointer text-sm"
     @click="handleClick"
   >
     {{ text }}
