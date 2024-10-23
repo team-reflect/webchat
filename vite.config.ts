@@ -48,7 +48,7 @@ export default defineConfig(({ mode }) => {
           },
           permissions: ['storage', 'sidePanel', 'scripting', 'tabs'],
           host_permissions: ['<all_urls>'],
-          // key: process.env.VITE_EXTENSION_PUBLIC_KEY,
+          key: process.env.VITE_EXTENSION_PUBLIC_KEY,
         },
       }),
       vue(),
