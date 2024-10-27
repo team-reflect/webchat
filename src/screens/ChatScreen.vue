@@ -14,6 +14,12 @@
       />
 
       <SampleChatMessage
+        label="Explain the page simply"
+        text="Explain the page paragraph by paragraph in a way that's easy to understand"
+        @select="(text: string) => handleSubmit(text)"
+      />
+
+      <SampleChatMessage
         text="Turn the page into a recipe"
         @select="(text: string) => handleSubmit(text)"
       />
