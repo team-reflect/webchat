@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-secondary text-secondary-foreground rounded-lg px-4 py-2 cursor-pointer text-sm"
+    class="bg-secondary text-secondary-foreground rounded-lg px-4 py-2 cursor-pointer text-sm hover:bg-secondary/80"
     @click="handleClick"
   >
     {{ label ?? text }}
