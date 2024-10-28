@@ -1,6 +1,8 @@
 <template>
   <div :class="darkMode ? 'dark' : ''" class="h-screen overflow-hidden">
-    <div class="flex flex-col h-screen overflow-hidden user-select-none bg-background">
+    <div
+      class="flex flex-col h-screen overflow-hidden user-select-none bg-background text-foreground"
+    >
       <!-- Nav bar -->
       <div
         class="flex justify-end p-1 px-2 border-b border-system-border gap-2 flex-none"

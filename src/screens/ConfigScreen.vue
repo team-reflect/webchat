@@ -1,9 +1,9 @@
 <template>
   <div class="p-6 space-y-6">
-    <div class="flex flex-col gap-2">
-      <h2 class="text-2xl">Configuration</h2>
+    <div class="flex flex-col gap-2 prose prose-sm dark:prose-invert prose-ul:m-0">
+      <h2>Configuration</h2>
 
-      <p class="text-sm">
+      <p>
         You can find API keys on either
         <a
           href="https://platform.openai.com/account/api-keys"
@@ -20,12 +20,13 @@
         >'s website.
       </p>
 
-      <ul class="list-disc list-inside">
+      <ul>
         <li>
-          Your API key is private and <strong>will not</strong> be shared with anyone.
+          Your API key is private and <strong>will not</strong> be shared with anyone
+          (other than the AI providers).
         </li>
-        <li>It is stored locally in your browser.</li>
-        <li>Requests are sent directly to the API providers.</li>
+        <li>Keys are stored locally in your browser.</li>
+        <li>Requests are sent directly to the AI providers.</li>
         <li>
           The source code is
           <a
