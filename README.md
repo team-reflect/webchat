@@ -11,6 +11,10 @@ Reflect Webchat is a Chrome extension that provides an AI-powered chat interface
 - Markdown rendering for chat messages
 - Dark mode support
 
+## Notes
+
+- This extension is built for Chrome and will not work in other browsers (such as Arc).
+
 ## Installation
 
 1. Clone this repository
