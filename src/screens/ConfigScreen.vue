@@ -6,18 +6,19 @@
       <p>
         You can find API keys on either
         <a
-          href="https://platform.openai.com/account/api-keys"
+          href="https://platform.openai.com/api-keys"
           target="_blank"
           class="underline text-primary"
           >OpenAI</a
         >
         or
         <a
-          href="https://console.anthropic.com/api-keys"
+          href="https://console.anthropic.com/settings/keys"
           target="_blank"
           class="underline text-primary"
           >Anthropic</a
-        >'s website.
+        >'s website. Make sure to add a credit card to the respective service to activate
+        your API key.
       </p>
 
       <ul>
