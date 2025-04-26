@@ -2,10 +2,11 @@ import { createAnthropic } from '@ai-sdk/anthropic'
 import { createOpenAI } from '@ai-sdk/openai'
 
 export type AiProvider = 'openai' | 'anthropic'
-export type AiModel = 'gpt-4o' | 'claude-3-5-sonnet-20240620'
+export type AiModel = 'gpt-4.1' | 'claude-3-5-sonnet-20240620'
 
 export const AiModelContextWindowLimit: Record<AiModel, number> = {
-  'gpt-4o': 128000,
+  // 1,047,576 tokens
+  'gpt-4.1': 1047576,
   /* The API actually supports 200K+ tokens but we use different tokenizer so we limit it to 128K */
   'claude-3-5-sonnet-20240620': 128000,
 }
@@ -39,7 +40,7 @@ export function createAi({
 export function getAiModelName(provider: AiProvider): AiModel {
   switch (provider) {
     case 'openai':
-      return 'gpt-4o'
+      return 'gpt-4.1'
     case 'anthropic':
       return 'claude-3-5-sonnet-20240620'
     default:
